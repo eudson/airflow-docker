@@ -30,15 +30,14 @@ def dim_organic_classifier_etl_dag():
         where_clause = f'oc.ID > {last_id}' if last_id else '1 = 1'
 
         query = f"""
-            SELECT
-                oc.ID,
-                oc.FISCAL_YEAR_ID,
-                oc.CREATION_DATE,
-                oc.CODE,
-                oc.DESCRIPTION AS ORGANIC_CLASSIFIER_DESCRIPTION,
-                tc.DESCRIPTION AS TERRITORY_CLASSIFIER_DESCRIPTION
+            SELECT oc.ID,
+                   oc.FISCAL_YEAR_ID,
+                   oc.CREATION_DATE,
+                   oc.CODE,
+                   oc.DESCRIPTION                                                   AS ORGANIC_CLASSIFIER_DESCRIPTION,
+                   CASE WHEN tc.DESCRIPTION IS NULL THEN ' ' ELSE tc.DESCRIPTION END AS TERRITORY_CLASSIFIER_DESCRIPTION
             FROM MEX.ORGANIC_CLASSIFIER oc
-            INNER JOIN MEX.TERRITORY_CLASSIFIER tc ON tc.ID = oc.TERRITORY_CLASSIFIER_ID
+                     LEFT JOIN MEX.TERRITORY_CLASSIFIER tc ON tc.ID = oc.TERRITORY_CLASSIFIER_ID
             WHERE {where_clause}
             ORDER BY oc.ID ASC
         """
